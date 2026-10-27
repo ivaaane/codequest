@@ -96,7 +96,7 @@ public class Program
                         string? name = Console.ReadLine();
 
 
-                        int points = 0, level = 0;
+                        int points = 0, level = 1;
 
                         for (int day = 1; day < 6; day++)
                         {
@@ -117,7 +117,81 @@ public class Program
                         else Console.WriteLine(Result1);
 
                         break;
+
+                    case 2:
+
+                        const string Intro = """
+                        Your wizard ventures into the Dungeon of the Dragon RAMón the Almighty to obtain its hidden treasure.
+                        Each door is protected by a digital access code. You have three (3) attempts per door.
+                        """;
+                        const string Door = "Your wizard is in front of the {0} door. ";
+                        const string Guess = "Guess the code (1-5): ";
+                        const string Wrong = "Wrong! {0} guesses left. ";
+                        const string Right = "The dragon respects you. You continue to the next level!";
+                        const string BadEnding = "The dragon detected your presence and kicked you out of the server!";
+                        const string GoodEnding = "You unlocked the last level. You can keep the dragon's treasure!";
+
+                        bool failed = false;
+
+                        Console.WriteLine(Intro);
+
+                        for (int door = 0; door < 3; door++)
+                        {
+                            if (!failed)
+                            {
+                                Console.Write(Door, door == 0 ? "1st" : (door == 1 ? "2nd" : "3rd")); // ah, semantics.
+
+                                int answer = rng.Next(1, 6);
+                                bool dunnit = false;
+
+                                for (int attempt = 3; attempt > 0; attempt--)
+                                {
+                                    if (!dunnit)
+                                    {
+                                        int guess = 0;
+                                        bool valid = false;
+
+                                        // get input
+                                        while (!valid)
+                                        {
+                                            Console.Write(Guess);
+
+                                            try
+                                            {
+                                                guess = Convert.ToInt16(Console.ReadLine());
+                                                valid = true;
+                                            }
+                                            catch (FormatException) { Console.WriteLine(ErrorNotNumber); }
+                                            catch (OverflowException) { Console.WriteLine(ErrorTooBig); }
+                                            catch (ArgumentNullException) { Console.WriteLine(ErrorNoInput); }
+                                        }
+                                        // sighhhh
+                                        
+                                        if (guess == answer)
+                                        {
+                                            Console.WriteLine(Right);
+                                            dunnit = true;
+
+                                            if (door == 2) Console.WriteLine(GoodEnding);
+                                        }
+                                        else if (attempt != 1) Console.Write(Wrong, attempt - 1);
+                                    }
+                                }
+
+                                if (!dunnit)
+                                {
+                                    Console.WriteLine(BadEnding);
+                                    failed = true;
+                                }
+                            }
+                            
+                        }
+
+                        break;
+
                 }
+                
+                Console.Write("\n");
             }
 
             // Repetim si l'entrada ha estat invàlida O si no han demanat sortir.

@@ -17,6 +17,8 @@ public class Program
         const string ErrorRange = "Error: the option must be between 0 and 3.";
         const string ErrorNoInput = "Error: no input received.";
 
+        const string LockedChapter = "Locked! You can't access this chapter yet. Complete chapter {0} first.";
+
         // Valor centinella: -1 NO és una opció vàlida.
         // El necessitem perquè el compilador no garanteix que 'option' s'assigni
         // dins del try (pot saltar una excepció abans d'arribar a l'assignació).
@@ -24,6 +26,7 @@ public class Program
         bool isValid;
 
         Random rng = new Random();
+        int chapter = 1;
 
         do
         {
@@ -47,10 +50,16 @@ public class Program
                 {
                     throw new ArgumentOutOfRangeException(nameof(option), ErrorRange);
                 }
-
-                // Si arribem aquí no ha saltat cap excepció: entrada vàlida
-                isValid = true;
-                Console.WriteLine($"You chose: {option}");
+                if (option != 0 && option > chapter)
+                {
+                    Console.WriteLine(LockedChapter, chapter);
+                }
+                else
+                {
+                    // Si arribem aquí no ha saltat cap excepció: entrada vàlida
+                    isValid = true;
+                    Console.WriteLine($"You chose: {option}");
+                }
             }
             catch (FormatException)              // Text que no és un número: "abc", "3.5", ""
             {
@@ -71,7 +80,7 @@ public class Program
             finally
             {
                 // S'executa SEMPRE: hi hagi error o no
-                Console.WriteLine("----------------------------");
+                Console.WriteLine("----------------------------\n");
             }
 
             if (isValid)
@@ -115,6 +124,8 @@ public class Program
                         else if (points >= 30) Console.WriteLine(Result3);
                         else if (points >= 20) Console.WriteLine(Result2);
                         else Console.WriteLine(Result1);
+
+                        if (points >= 20 && chapter == 1) chapter = 2;
 
                         break;
 
@@ -172,7 +183,11 @@ public class Program
                                             Console.WriteLine(Right);
                                             dunnit = true;
 
-                                            if (door == 2) Console.WriteLine(GoodEnding);
+                                            if (door == 2)
+                                            {
+                                                Console.WriteLine(GoodEnding);
+                                                if (chapter == 2) chapter = 3;
+                                            }
                                         }
                                         else if (attempt != 1) Console.Write(Wrong, attempt - 1);
                                     }
@@ -186,6 +201,37 @@ public class Program
                             }
                             
                         }
+
+                        break;
+
+                    case 3:
+
+                        const string Excavation = "Excavation #{0} report: ";
+                        const string Nothing = "Today ain't your lucky day. You found 0 bits.\n";
+                        const string Something = "Today's your lucky day. You found {0} bits.\n";
+                        const string ResultMid = "Your magic card is still integrated. Return to try your luck!";
+                        const string ResultGood = "You unlocked the golden GPU! From now on your spells run on 120 FPS!";
+
+                        int total = 0;
+
+                        for (int mine = 1; mine < 6; mine++)
+                        {
+                            Console.Write(Excavation, mine);
+
+                            if (rng.Next(0, 5) == 0)
+                            {
+                                Console.Write(Nothing);
+                            }
+                            else
+                            {
+                                int result = rng.Next(5, 51);
+                                total += result;
+                                Console.Write(Something, result);
+                            }
+                        }
+
+                        if (total > 200) Console.WriteLine(ResultGood);
+                        else Console.WriteLine(ResultMid);
 
                         break;
 

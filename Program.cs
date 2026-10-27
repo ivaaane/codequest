@@ -1,4 +1,5 @@
 using System;
+using System.Security.Cryptography;
 
 public class Program
 {
@@ -21,6 +22,8 @@ public class Program
         // dins del try (pot saltar una excepció abans d'arribar a l'assignació).
         int option = -1;
         bool isValid;
+
+        Random rng = new Random();
 
         do
         {
@@ -71,9 +74,57 @@ public class Program
                 Console.WriteLine("----------------------------");
             }
 
+            if (isValid)
+            {
+                switch (option)
+                {
+                    case 1:
+
+                        const string WizardName = "Enter your wizard name: ";
+                        const string Day = "Day {0} -> {1}, you meditated {2} hours and now your power is worth {3} points!";
+                        const string LevelUp = "* -> {0} reached level {1}!";
+                        const string TotalLevel = "{0}'s training has finished with {1} points of power!";
+
+                        const string Result1 = "You repeat on June.\nRank: Raoden the Elantrí.";
+                        const string Result2 = "You still confuse wand and spoon.\nRank: Zyn the Bugged.";
+                        const string Result3 = "You are a Dark Breeze Summoner.\nRank: Arka Nullpointer";
+                        const string Result4 = "Wow! You can summon dragons without burning the lab\n Rank: Elarion the Flamed One.";
+                        const string Result5 = "You achieved the Arcane Master rank!\nRank: ITB-Wizard the Gray";
+
+
+                        Console.Write(WizardName);
+                        string? name = Console.ReadLine();
+
+
+                        int points = 0, level = 0;
+
+                        for (int day = 1; day < 6; day++)
+                        {
+                            int lastLevel = level;
+                            points += rng.Next(0, 11);
+                            level = 1 + (points / 10);
+
+                            Console.WriteLine(Day, day, name, rng.Next(1, 25), points);
+                            if (level != lastLevel) Console.WriteLine(LevelUp, name, level);
+                        }
+
+                        Console.WriteLine(TotalLevel, name, points);
+
+                        if (points >= 40) Console.WriteLine(Result5);
+                        else if (points >= 35) Console.WriteLine(Result4);
+                        else if (points >= 30) Console.WriteLine(Result3);
+                        else if (points >= 20) Console.WriteLine(Result2);
+                        else Console.WriteLine(Result1);
+
+                        break;
+                }
+            }
+
             // Repetim si l'entrada ha estat invàlida O si no han demanat sortir.
             // Comprovem primer !isValid perquè, amb un error, 'option' pot
             // valer 0 d'una volta anterior.
         } while (!isValid || option != 0);
+
+        
     }
 }
